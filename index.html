@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Speech to Text</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        button {
+            background-color: #603495;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #603495;
+        }
+    </style>
+    <script>
+        // Check if speech recognition is supported by the browser
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = 'en-US'; // Set the language for speech recognition
+
+        let recognizing = false; // Flag to track if recognition is in progress
+
+        // Event handler for the speech recognition result
+        recognition.onresult = function(event) {
+            const result = event.results[0][0].transcript;
+            document.getElementById('result').textContent = result;
+
+            // Save the result to the database
+            saveToDatabase(result);
+        };
+
+        // Event handler for saving the result to the database
+        function saveToDatabase(result) {
+            fetch('save_to_database.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'text=' + encodeURIComponent(result)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Text saved to the database successfully!');
+                } else {
+                    console.error('Failed to save text to the database.');
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred while saving text to the database:', error);
+            });
+        }
+
+        // Event handler for the start/stop button
+        function toggleRecognition() {
+            if (!recognizing) {
+                recognition.start();
+                recognizing = true;
+                document.getElementById('toggleBtn').textContent = 'Stop';
+            } else {
+                recognition.stop();
+                recognizing = false;
+                document.getElementById('toggleBtn').textContent = 'Start';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Speech to Text</h1>
+    <button id="toggleBtn" onclick="toggleRecognition()">Start</button>
+    <div id="result"></div>
+</body>
+</html>
