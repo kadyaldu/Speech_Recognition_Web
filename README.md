@@ -1,9 +1,9 @@
 # Speech_Recognition_Web
 
 We worked as a group the group members:
-Cady Alali
-Dana Alghofaily
-Kady Aldughaim
+- Cady Alali
+- Dana Alghofaily
+- Kady Aldughaim
 
 
 Speech to Text (Save to Database)
